@@ -3,6 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { loadData, saveData, isToday, matchMedication } from "./care-data.js";
 import { askNova } from "./bedrock.js";
+import { buildCareView, VIEW_URI, VIEW_MIME } from "./care-view.js";
 
 function reply(text) {
   return { content: [{ type: "text", text }] };
@@ -109,6 +110,26 @@ export function createMcpServer() {
       );
       return reply(summary);
     }
+  );
+
+  // MCP App: an HTML view (ui:// resource) the host can show on a screen
+  server.registerResource(
+    "care-today-view",
+    VIEW_URI,
+    { title: "Today's care screen", description: "Medication checklist, alerts and notes for today.", mimeType: VIEW_MIME },
+    async (uri) => ({ contents: [{ uri: uri.href, mimeType: VIEW_MIME, text: buildCareView() }] })
+  );
+
+  server.registerTool(
+    "show_care_dashboard",
+    {
+      title: "Show today's care screen",
+      description:
+        "Show today's medication checklist, alerts and notes on the Echo Show screen. Use when someone asks to see or show the care status.",
+      inputSchema: {},
+      _meta: { ui: { resourceUri: VIEW_URI }, "ui/resourceUri": VIEW_URI },
+    },
+    async () => reply("Here's today's care screen.")
   );
 
   return server;
