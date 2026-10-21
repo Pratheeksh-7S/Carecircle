@@ -4,6 +4,7 @@ import { z } from "zod";
 import { loadData, saveData, isToday, matchMedication } from "./care-data.js";
 import { askNova } from "./bedrock.js";
 import { buildCareView, VIEW_URI, VIEW_MIME } from "./care-view.js";
+import { registerLiveTools } from "./live-tools.js";
 
 function reply(text) {
   return { content: [{ type: "text", text }] };
@@ -131,6 +132,9 @@ export function createMcpServer() {
     },
     async () => reply("Here's today's care screen.")
   );
+
+  // Live tools: web search, web pages, weather, time, facts and news
+  registerLiveTools(server);
 
   return server;
 }
