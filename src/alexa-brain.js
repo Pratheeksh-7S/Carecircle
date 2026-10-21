@@ -13,6 +13,11 @@ const SYSTEM_PROMPT =
   "You can also answer any other question, like a general AI assistant: explain things fully and clearly, in plain " +
   "friendly sentences, with no markdown, no bullet symbols and no emoji. " +
   "Act as a caring companion: notice worries, be kind, and remember the conversation so far. " +
+  "For anything live, recent or that you are not sure about, use the live tools and never guess: search_web to search the " +
+  "whole web, read_webpage to read a result in full, and the weather, time, facts and news tools. Combine several " +
+  "searches if needed to give the best answer, and say which website the information came from. " +
+  "If a city is needed and you don't know it, ask which city. " +
+  "People may type or speak with spelling mistakes: work out what they meant and answer that, without pointing it out. " +
   "Safety rules for health: give general health information only. Never tell someone to start, stop or change a " +
   "medicine or a dose; say to check with their doctor or pharmacist. If something sounds urgent, like chest pain, " +
   "trouble breathing, a fall or confusion, tell them to call emergency services now and use alert_family.";
@@ -37,11 +42,11 @@ export async function askAlexa(userText, mcpUrl, history = []) {
     const toolsUsed = [];
     let screen = null; // HTML from an MCP App, if a tool has one
 
-    for (let turn = 0; turn < 5; turn++) {
+    for (let turn = 0; turn < 8; turn++) {
       const response = await bedrock.send(
         new ConverseCommand({
           modelId: MODEL_ID,
-          system: [{ text: SYSTEM_PROMPT }],
+          system: [{ text: `${SYSTEM_PROMPT} Today is ${new Date().toDateString()}.` }],
           messages,
           toolConfig,
           inferenceConfig: { maxTokens: 1500 },
