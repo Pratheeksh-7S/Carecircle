@@ -1,0 +1,27 @@
+{
+  "name": "carecircle",
+  "version": "1.0.0",
+  "description": "Alexa+ voice assistant for family caregivers",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pratheeksh-7S/carecircle.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Pratheeksh-7S/carecircle/issues"
+  },
+  "homepage": "https://github.com/Pratheeksh-7S/carecircle#readme",
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.1154.0",
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "express": "^5.3.0",
+    "zod": "^4.6.7"
+  }
+}
