@@ -2,6 +2,8 @@
 
 **A caring, open-world voice assistant for families looking after a loved one.**
 
+**Try it live:** https://carecircle-rm1e.onrender.com (use Chrome or Edge for voice; the first visit can take about 30 seconds to wake up)
+
 Mom lives alone. Her children live in other cities. Every day they worry: *Did she take her pills? Is she okay?*
 CareCircle is an Alexa+ add-on that answers those questions. Mom just talks to Alexa, and the whole family stays in the loop.
 And because Alexa+ is a real assistant, CareCircle can also answer anything else: live weather, news, facts from the web, or a full explanation of a health condition.
@@ -56,6 +58,7 @@ flowchart LR
 - **AWS:** Amazon Bedrock, Amazon Nova 2 Lite (`global.amazon.nova-2-lite-v1:0`), region `ap-southeast-2`
 - **Live data:** DuckDuckGo or Tavily (web search), Open-Meteo (weather), Wikipedia, Google News RSS: no keys needed
 - **App:** Node.js 24, Express 5, Zod, plain JavaScript, Web Speech API
+- **Hosting:** Render, with per-visitor usage limits
 
 ## Run it
 
@@ -78,7 +81,7 @@ $env:AWS_BEARER_TOKEN_BEDROCK="your-key"
 export AWS_BEARER_TOKEN_BEDROCK="your-key"
 ```
 
-Optional: `AWS_REGION` (default `ap-southeast-2`), `BEDROCK_MODEL_ID` (default `global.amazon.nova-2-lite-v1:0`) and `TAVILY_API_KEY` (better web search; without it CareCircle uses DuckDuckGo).
+Optional: `AWS_REGION` (default `ap-southeast-2`), `BEDROCK_MODEL_ID` (default `global.amazon.nova-2-lite-v1:0`), `TAVILY_API_KEY` (better web search; without it CareCircle uses DuckDuckGo), and `MAX_PER_HOUR` / `MAX_PER_DAY` (usage limits, default 30 and 500).
 
 ```bash
 npm start
@@ -89,7 +92,7 @@ Open http://localhost:3000 in Chrome or Edge. The MCP endpoint is http://localho
 ## Project structure
 
 ```
-server.js            Express server: /mcp endpoint, /api/alexa, /api/dashboard
+server.js            Express server: /mcp endpoint, /api/alexa, /api/dashboard, usage limits
 src/mcp-server.js    CareCircle MCP server: care tools + MCP App resource
 src/live-tools.js    Live tools: web search, web pages, weather, time, facts, news
 src/care-view.js     The MCP App HTML view (Echo Show style screen)
