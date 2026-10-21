@@ -1,6 +1,8 @@
 const ring = document.getElementById("ring");
 const log = document.getElementById("log");
 
+const history = []; // the chat so far, so Alexa remembers context
+
 function setRing(state) { ring.className = "ring " + (state || ""); }
 
 function addBubble(cls, text, tools = []) {
@@ -17,8 +19,22 @@ function addBubble(cls, text, tools = []) {
   log.scrollTop = log.scrollHeight;
 }
 
+// MCP App screen (like an Echo Show): shows the tool's ui:// view in a sandboxed frame
+function showScreen(html) {
+  const frame = document.createElement("iframe");
+  frame.className = "screen";
+  frame.sandbox = "";
+  frame.srcdoc = html;
+  log.appendChild(frame);
+  log.scrollTop = log.scrollHeight;
+}
+
 function speak(text) {
   if (!("speechSynthesis" in window)) return setRing();
+  speechSynthesis.cancel();
+  // Long answers: read the first few sentences, the full answer stays on screen
+  const sentences = text.split(/(?<=[.!?])\s+/);
+  if (sentences.length > 3) text = sentences.slice(0, 3).join(" ") + " The full answer is on the screen.";
   const u = new SpeechSynthesisUtterance(text);
   u.lang = "en-US";
   u.onend = () => setRing();
@@ -34,10 +50,15 @@ async function ask(text) {
     const res = await fetch("/api/alexa", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ text, history }),
     });
     const data = await res.json();
     addBubble("alexa", data.reply, data.toolsUsed);
+    if (res.ok && data.reply) {
+      history.push({ role: "user", text }, { role: "assistant", text: data.reply });
+      history.splice(0, history.length - 12); // keep the last 6 questions and answers
+    }
+    if (data.screen) showScreen(data.screen);
     speak(data.reply);
   } catch (err) {
     addBubble("alexa", "Sorry, I can't reach CareCircle right now.");
