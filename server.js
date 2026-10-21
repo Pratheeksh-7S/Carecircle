@@ -27,7 +27,7 @@ app.post("/mcp", async (req, res) => {
 // Simulated Alexa+: the web page sends what the user said
 app.post("/api/alexa", async (req, res) => {
   try {
-    res.json(await askAlexa(req.body.text, MCP_URL));
+    res.json(await askAlexa(req.body.text, MCP_URL, req.body.history));
   } catch (err) {
     console.error(err);
     res.status(500).json({ reply: "Sorry, something went wrong.", error: err.message, toolsUsed: [] });
