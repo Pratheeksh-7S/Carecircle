@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CareCircle for Alexa+</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>CareCircle</h1>
+    <span>Simulated Alexa+ add-on for family caregivers</span>
+  </header>
+  <main>
+    <section class="panel echo">
+      <h2>Alexa+ (simulated Echo)</h2>
+      <div id="ring" class="ring"></div>
+      <button id="mic" class="mic">🎤 Tap and speak</button>
+      <form id="form">
+        <textarea id="text" rows="1" placeholder="Or type: Alexa, did Mom take her pills?"></textarea>
+        <button>Send</button>
+      </form>
+      <div class="examples">
+        <button>I took my blood pressure pill</button>
+        <button>Did Mom take her medicines today?</button>
+        <button>Mom felt dizzy after lunch</button>
+        <button>How was Mom's day?</button>
+      </div>
+      <div id="log" class="log"></div>
+    </section>
+
+    <section class="panel">
+      <h2 id="title">Today's care</h2>
+      <ul id="meds" class="meds"></ul>
+      <h2>Alerts</h2>
+      <div id="alerts"></div>
+      <h2>Care notes</h2>
+      <div id="notes"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
