@@ -9,6 +9,7 @@ const PORT = process.env.PORT || 3000;
 const MCP_URL = `http://localhost:${PORT}/mcp`;
 
 const app = express();
+app.set("trust proxy", 1); // real visitor IPs when hosted behind a proxy
 app.use(express.json());
 app.use(express.static("public"));
 
@@ -24,8 +25,32 @@ app.post("/mcp", async (req, res) => {
   await transport.handleRequest(req, res, req.body);
 });
 
+// Usage limits, so a public link can't burn through the Bedrock credits
+const PER_HOUR = Number(process.env.MAX_PER_HOUR || 30); // questions per visitor per hour
+const PER_DAY = Number(process.env.MAX_PER_DAY || 500); // questions for everyone per day
+const visitors = new Map(); // ip -> times of recent questions
+let today = new Date().toDateString();
+let todayCount = 0;
+
+function overLimit(ip) {
+  const now = Date.now();
+  if (new Date().toDateString() !== today) {
+    today = new Date().toDateString();
+    todayCount = 0;
+  }
+  const recent = (visitors.get(ip) || []).filter((t) => now - t < 3600_000);
+  if (recent.length >= PER_HOUR) return "You've asked a lot this hour. Please try again a little later.";
+  if (todayCount >= PER_DAY) return "CareCircle has reached today's demo limit. Please come back tomorrow.";
+  recent.push(now);
+  visitors.set(ip, recent);
+  todayCount++;
+  return null;
+}
+
 // Simulated Alexa+: the web page sends what the user said
 app.post("/api/alexa", async (req, res) => {
+  const limited = overLimit(req.ip);
+  if (limited) return res.status(429).json({ reply: limited, toolsUsed: [] });
   try {
     res.json(await askAlexa(req.body.text, MCP_URL, req.body.history));
   } catch (err) {
